@@ -1,26 +1,71 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import styles from '../styles/Home.module.css'
 
 import Banner from '../components/banner'
 import Card from '../components/card'
 import heroImage from '../public/images/hero-image.png'
-import coffeeStoresData from '../data/coffee-stores.json'
-// import cdm from '../public/images/cdm.jpg'
+import { fetchCoffeeStores } from '../lib/coffee_stores'
+import useTrackLocation from '../hooks/useTrackLocation'
 
 export async function getStaticProps(context) {
+  const coffeeStores = await fetchCoffeeStores()
+
   return {
     props: {
-      coffeeStores: coffeeStoresData,
+      coffeeStores,
     },
   }
 }
 
 export default function Home(props) {
-  console.log('props', props)
-  const handleOnButtonClick = () => {
+  const { handleTrackLocation, isFindingLocation, latLong, locationErrorMsg } =
+    useTrackLocation()
+  const [coffeeStores, setCoffeeStores] = useState('')
+  const [coffeeStoresError, setCoffeeStoresError] = useState(null)
+
+  //   console.log({ latLong, locationErrorMsg })
+
+  //   useEffect(() => {
+  //     async function setCoffeeStoresByLocation() {
+  //       if (latLong) {
+  //         console.log(latLong)
+  //         try {
+  //           const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 6)
+  //           console.log({ fetchedCoffeeStores })
+  //           //set coffee stores
+  //         } catch (error) {
+  //           //set error
+  //           console.log('Error', { error })
+  //         }
+  //       }
+  //     }
+  //     setCoffeeStoresByLocation()
+  //   }, [() => {}, latLong])
+  useEffect(() => {
+    async function setCoffeeStoresByLocation() {
+      if (latLong) {
+        try {
+          const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 3)
+          console.log({ fetchedCoffeeStores })
+          setCoffeeStores(fetchedCoffeeStores)
+          //set coffee stores
+        } catch (error) {
+          //set error
+          console.log({ error })
+          setCoffeeStoresError(error.message)
+        }
+      }
+    }
+    setCoffeeStoresByLocation()
+  }, [latLong])
+
+  const handleOnBannerBtnClick = () => {
     console.log('click')
+    handleTrackLocation()
   }
+  //   console.log(props)
 
   return (
     <div className={styles.container}>
@@ -32,26 +77,30 @@ export default function Home(props) {
 
       <main className={styles.main}>
         <Banner
-          buttonText='View stores nearby'
-          handleOnClick={handleOnButtonClick}
-        />
+          buttonText={isFindingLocation ? 'Locating...' : 'View Stores Nearby'}
+          handleOnClick={handleOnBannerBtnClick}
+        ></Banner>
+        {locationErrorMsg && <p>Something went wrong: {locationErrorMsg}</p>}
         <div className={styles.heroImage}>
           <Image src={heroImage} width={700} height={400} alt='hero image' />
         </div>
         {props.coffeeStores.length > 0 && (
           <>
-            <h2 className={styles.heading2}>New Orleans Stores</h2>
-            <div className={styles.cardLayout}>
-              {props.coffeeStores.map((coffeeStore) => {
-                return (
-                  <Card
-                    key={coffeeStore.id}
-                    name={coffeeStore.name}
-                    imgUrl={coffeeStore.imgUrl}
-                    href={`coffee-store/${coffeeStore.id}`}
-                  />
-                )
-              })}
+            <div className={styles.sectionWrapper}>
+              <h2 className={styles.heading2}>New Orleans Stores</h2>
+              <div className={styles.cardLayout}>
+                {props.coffeeStores.map((coffeeStore) => {
+                  return (
+                    <Card
+                      key={coffeeStore.id}
+                      name={coffeeStore.name}
+                      imgUrl={coffeeStore.image_url}
+                      src={''}
+                      href={`coffee-store/${coffeeStore.id}`}
+                    />
+                  )
+                })}
+              </div>
             </div>
           </>
         )}
