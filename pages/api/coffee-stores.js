@@ -1,6 +1,7 @@
 const express = require('express')
 const axios = require('axios')
 const cors = require('cors')
+require('dotenv').config()
 
 const app = express()
 const port = 3001 // Choose a port number for your server
