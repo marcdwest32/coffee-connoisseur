@@ -8,7 +8,7 @@ const createCoffeeStore = async (req, res) => {
         //find a record
         const findCoffeeStoreRecords = await table
           .select({
-            filterByFormula: `id=${id}`,
+            filterByFormula: `id="${id}"`,
           })
           .firstPage()
 

@@ -11,7 +11,6 @@ import coffeeAlt from '../../public/images/coffee-alt.jpg'
 
 export async function getStaticProps(staticProps) {
   const params = staticProps.params
-  console.log('line 14 params', params)
 
   const coffeeStores = await fetchCoffeeStores()
   const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
@@ -62,31 +61,54 @@ const CoffeeStore = (initialProps) => {
     return initialProps.coffeeStore
   })
 
+  const handleCreateCoffeeStore = async (coffeeStore) => {
+    try {
+      console.log(coffeeStore)
+      const { id, name, image_url, url, rating, location = {} } = coffeeStore
+      const { address1: address, city, zip_code, state } = location
+      const neighborhood =
+        city && state && zip_code ? `${city}, ${state} ${zip_code}` : ''
+      const imgUrl = image_url || coffeeAlt
+
+      const response = await fetch('/api/createCoffeeStore', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          name,
+          address: address || '',
+          neighborhood: neighborhood || '',
+          votes: rating || 0,
+          imgUrl,
+        }),
+      })
+      const dbCoffeeStore = await response.json()
+      console.log({ dbCoffeeStore })
+    } catch (err) {
+      console.error('error creating coffee store', err)
+    }
+  }
+
   useEffect(() => {
     if (empty && coffeeStores.length > 0) {
-      const findCoffeeStoreById = coffeeStores.find(
+      const coffeeStoreFromContext = coffeeStores.find(
         (coffeeStore) => coffeeStore.id.toString() === id,
       )
-      console.log('line 70 coffeeStore', findCoffeeStoreById)
-      setCoffeeStore(findCoffeeStoreById)
+      if (coffeeStoreFromContext) {
+        setCoffeeStore(coffeeStoreFromContext)
+        handleCreateCoffeeStore(coffeeStoreFromContext)
+      }
     }
   }, [id, empty, coffeeStores])
 
-  //   console.log('line 60 empty', empty)
-  //   useEffect(() => {
-  //     console.log('line 59 coffeeStores', coffeeStores)
-  //     if (empty) {
-  //       if (coffeeStores.length > 0) {
-  //         const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
-  //           return coffeeStore.id.toString() === id //dynamic id
-  //         })
-  //         console.log('line 73 coffeeStore', findCoffeeStoreById)
-  //         setCoffeeStore(findCoffeeStoreById)
-  //       }
-  //     }
-  //   }, [id])
-
-  const { id: storeId, name, image_url, url, location = {} } = coffeeStore
+  const {
+    id: storeId,
+    name,
+    image_url,
+    url,
+    rating: votes,
+    location = {},
+  } = coffeeStore
   const { address1: address, city, zip_code, state } = location
   const neighborhood =
     city && state && zip_code ? `${city}, ${state} ${zip_code}` : ''
@@ -140,7 +162,7 @@ const CoffeeStore = (initialProps) => {
           </div>
           <div className={styles.iconWrapper}>
             <Image src='/icons/star.svg' width='24' height='24' alt={'Star'} />
-            <p className={styles.text}>1</p>
+            <p className={styles.text}>{votes}</p>
           </div>
           <button className={styles.upvoteButton} onClick={handleUpvoteButton}>
             UpVote!
