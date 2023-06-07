@@ -9,6 +9,7 @@
     "serve": "node pages/api/coffee-stores.js"
   },
   "dependencies": {
+    "airtable": "^0.12.1",
     "api": "^5.0.8",
     "axios": "^1.4.0",
     "cors": "^2.8.5",
