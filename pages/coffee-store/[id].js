@@ -68,7 +68,9 @@ const CoffeeStore = (initialProps) => {
       const { address1: address, city, zip_code, state } = location
       const neighborhood =
         city && state && zip_code ? `${city}, ${state} ${zip_code}` : ''
-      const imgUrl = image_url || coffeeAlt
+      const imgUrl =
+        image_url ||
+        'https://media.cnn.com/api/v1/images/stellar/prod/150929101049-black-coffee-stock.jpg?q=x_3,y_1231,h_1684,w_2993,c_crop/h_540,w_960/f_webp'
 
       const response = await fetch('/api/createCoffeeStore', {
         method: 'POST',
@@ -78,7 +80,9 @@ const CoffeeStore = (initialProps) => {
           name,
           address: address || '',
           neighborhood: neighborhood || '',
-          votes: rating || 0,
+          rating: rating || 0,
+          votes: 0,
+          url,
           imgUrl,
         }),
       })
@@ -98,15 +102,17 @@ const CoffeeStore = (initialProps) => {
         setCoffeeStore(coffeeStoreFromContext)
         handleCreateCoffeeStore(coffeeStoreFromContext)
       }
+    } else {
+      handleCreateCoffeeStore(initialProps.coffeeStore)
     }
-  }, [id, empty, coffeeStores])
+  }, [id, empty, coffeeStores, initialProps.coffeeStore])
 
   const {
     id: storeId,
     name,
     image_url,
     url,
-    rating: votes,
+    rating,
     location = {},
   } = coffeeStore
   const { address1: address, city, zip_code, state } = location
@@ -114,9 +120,13 @@ const CoffeeStore = (initialProps) => {
     city && state && zip_code ? `${city}, ${state} ${zip_code}` : ''
   const imgUrl = image_url || coffeeAlt
 
+  const [voteCount, setVoteCount] = useState(0)
+
   const handleUpvoteButton = () => {
-    console.log('upvote')
+    let count = voteCount + 1
+    setVoteCount(count)
   }
+  console.log(coffeeStore)
 
   return (
     <div className={styles.layout}>
@@ -162,7 +172,16 @@ const CoffeeStore = (initialProps) => {
           </div>
           <div className={styles.iconWrapper}>
             <Image src='/icons/star.svg' width='24' height='24' alt={'Star'} />
-            <p className={styles.text}>{votes}</p>
+            <p className={styles.text}>{rating} on Yelp!</p>
+          </div>
+          <div className={styles.iconWrapper}>
+            <Image
+              src='/icons/thumbUp.svg'
+              width='24'
+              height='24'
+              alt={'Thumb'}
+            />
+            <p className={styles.text}>{voteCount}</p>
           </div>
           <button className={styles.upvoteButton} onClick={handleUpvoteButton}>
             UpVote!
