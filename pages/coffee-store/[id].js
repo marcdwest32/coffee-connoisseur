@@ -128,9 +128,23 @@ const CoffeeStore = (initialProps) => {
     }
   }, [data])
 
-  const handleUpvoteButton = () => {
-    let count = voteCount + 1
-    setVoteCount(count)
+  const handleUpvoteButton = async () => {
+    try {
+      const response = await fetch('/api/upvoteCoffeeStoreById', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+        }),
+      })
+      const dbCoffeeStore = await response.json()
+      if (dbCoffeeStore && dbCoffeeStore.length > 0) {
+        let count = voteCount + 1
+        setVoteCount(count)
+      }
+    } catch (err) {
+      console.error('error upvoting', err)
+    }
   }
 
   if (error) {
@@ -163,19 +177,19 @@ const CoffeeStore = (initialProps) => {
         <div className={`glass ${styles.col2}`}>
           <div className={styles.iconWrapper}>
             <Image
-              src='/icons/nearMe.svg'
+              src='/icons/places.svg'
               width='24'
               height='24'
-              alt={'Near Me'}
+              alt={'Places'}
             />
             <p className={styles.text}>{address}</p>
           </div>
           <div className={styles.iconWrapper}>
             <Image
-              src='/icons/places.svg'
+              src='/icons/nearMe.svg'
               width='24'
               height='24'
-              alt={'Places'}
+              alt={'Near Me'}
             />
             <p className={styles.text}>{neighborhood}</p>
           </div>
