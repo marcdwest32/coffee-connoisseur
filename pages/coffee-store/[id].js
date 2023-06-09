@@ -168,13 +168,15 @@ const CoffeeStore = (initialProps) => {
           <div className={styles.nameWrapper}>
             <h1 className={styles.name}>{name}</h1>
           </div>
-          <Image
-            className={styles.storeImage}
-            alt={name || 'coffee'}
-            src={imgUrl}
-            width={600}
-            height={360}
-          />
+          <div className={styles.storeImgWrapper}>
+            <Image
+              className={styles.storeImg}
+              alt={name || 'coffee'}
+              src={imgUrl}
+              width={600}
+              height={360}
+            />
+          </div>
         </div>
         <div className={`glass ${styles.col2}`}>
           <div className={styles.iconWrapper}>
