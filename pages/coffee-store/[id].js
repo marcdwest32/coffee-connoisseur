@@ -3,9 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import useSWR from 'swr'
 import { StoreContext } from '../../store/store-context'
 import { fetchCoffeeStores } from '../../lib/coffee-stores'
-import { isEmpty } from '../../utils'
+import { fetcher, isEmpty } from '../../utils'
 import styles from '../../styles/coffee-store.module.css'
 import coffeeAlt from '../../public/images/coffee-alt.jpg'
 
@@ -52,25 +53,15 @@ const CoffeeStore = (initialProps) => {
 
   const empty = isEmpty(initialProps.coffeeStore)
 
-  const [coffeeStore, setCoffeeStore] = useState(() => {
-    if (empty && coffeeStores.length > 0) {
-      return coffeeStores.find(
-        (coffeeStore) => coffeeStore.id.toString() === id,
-      )
-    }
-    return initialProps.coffeeStore
-  })
+  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore)
 
   const handleCreateCoffeeStore = async (coffeeStore) => {
     try {
-      console.log(coffeeStore)
       const { id, name, image_url, url, rating, location = {} } = coffeeStore
       const { address1: address, city, zip_code, state } = location
       const neighborhood =
         city && state && zip_code ? `${city}, ${state} ${zip_code}` : ''
-      const imgUrl =
-        image_url ||
-        'https://media.cnn.com/api/v1/images/stellar/prod/150929101049-black-coffee-stock.jpg?q=x_3,y_1231,h_1684,w_2993,c_crop/h_540,w_960/f_webp'
+      const imgUrl = image_url || coffeeAlt
 
       const response = await fetch('/api/createCoffeeStore', {
         method: 'POST',
@@ -87,7 +78,6 @@ const CoffeeStore = (initialProps) => {
         }),
       })
       const dbCoffeeStore = await response.json()
-      console.log({ dbCoffeeStore })
     } catch (err) {
       console.error('error creating coffee store', err)
     }
@@ -111,22 +101,39 @@ const CoffeeStore = (initialProps) => {
     id: storeId,
     name,
     image_url,
-    url,
+    url: storeUrl,
     rating,
     location = {},
   } = coffeeStore
-  const { address1: address, city, zip_code, state } = location
+  const address = location.address1 || coffeeStore.address
+  const { city, zip_code, state } = location
   const neighborhood =
-    city && state && zip_code ? `${city}, ${state} ${zip_code}` : ''
-  const imgUrl = image_url || coffeeAlt
+    city && state && zip_code
+      ? `${city}, ${state} ${zip_code}`
+      : coffeeStore.neighborhood
+      ? coffeeStore.neighborhood
+      : ''
+  const imgUrl = coffeeStore.imgUrl || image_url || coffeeAlt
 
   const [voteCount, setVoteCount] = useState(0)
+
+  const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher)
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setCoffeeStore(data[0])
+      setVoteCount(data[0].votes)
+    }
+  }, [data])
 
   const handleUpvoteButton = () => {
     let count = voteCount + 1
     setVoteCount(count)
   }
-  console.log(coffeeStore)
+
+  if (error) {
+    return <div>Something went wrong retrieving coffee store page</div>
+  }
 
   return (
     <div className={styles.layout}>
@@ -172,7 +179,7 @@ const CoffeeStore = (initialProps) => {
           </div>
           <div className={styles.iconWrapper}>
             <Image src='/icons/star.svg' width='24' height='24' alt={'Star'} />
-            <p className={styles.text}>{rating} on Yelp!</p>
+            <p className={styles.text}>{rating} Stars on Yelp!</p>
           </div>
           <div className={styles.iconWrapper}>
             <Image
