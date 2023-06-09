@@ -8,7 +8,9 @@ import { StoreContext } from '../../store/store-context'
 import { fetchCoffeeStores } from '../../lib/coffee-stores'
 import { fetcher, isEmpty } from '../../utils'
 import styles from '../../styles/coffee-store.module.css'
-import coffeeAlt from '../../public/images/coffee-alt.jpg'
+
+const coffeeAlt =
+  'https://s3-media1.fl.yelpcdn.com/bphoto/G0qtDI4vD1aQk1zlPkhA5w/o.jpg'
 
 export async function getStaticProps(staticProps) {
   const params = staticProps.params

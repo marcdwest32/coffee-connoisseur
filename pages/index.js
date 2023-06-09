@@ -3,12 +3,14 @@ import Image from 'next/image'
 import { useContext, useEffect, useState } from 'react'
 import { ACTION_TYPES, StoreContext } from '../store/store-context'
 import styles from '../styles/Home.module.css'
-
 import Banner from '../components/banner'
 import Card from '../components/card'
 import heroImage from '../public/images/hero-image.png'
 import { fetchCoffeeStores } from '../lib/coffee-stores'
 import useTrackLocation from '../hooks/useTrackLocation'
+
+const coffeeAlt =
+  'https://s3-media1.fl.yelpcdn.com/bphoto/G0qtDI4vD1aQk1zlPkhA5w/o.jpg'
 
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores()
@@ -35,7 +37,6 @@ export default function Home(props) {
             `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=20`,
           )
           const coffeeStores = await response.json()
-          console.log({ coffeeStores })
           dispatch({
             type: ACTION_TYPES.SET_COFFEE_STORES,
             payload: { coffeeStores },
@@ -81,9 +82,9 @@ export default function Home(props) {
                   return (
                     <Card
                       key={coffeeStore.id}
-                      //   id={coffeeStore.id}
+                      alt={'coffee'}
                       name={coffeeStore.name}
-                      imgUrl={coffeeStore.image_url}
+                      imgUrl={coffeeStore.image_url || coffeeAlt}
                       src={''}
                       href={`coffee-store/${coffeeStore.id}`}
                     />
