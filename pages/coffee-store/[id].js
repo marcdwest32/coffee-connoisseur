@@ -12,6 +12,8 @@ import styles from '../../styles/coffee-store.module.css'
 const coffeeAlt =
   'https://s3-media1.fl.yelpcdn.com/bphoto/G0qtDI4vD1aQk1zlPkhA5w/o.jpg'
 
+let altName = ''
+
 export async function getStaticProps(staticProps) {
   const params = staticProps.params
 
@@ -168,7 +170,7 @@ const CoffeeStore = (initialProps) => {
           </div>
           <Image
             className={styles.storeImage}
-            alt={name}
+            alt={name || 'coffee'}
             src={imgUrl}
             width={600}
             height={360}

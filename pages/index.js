@@ -71,7 +71,13 @@ export default function Home(props) {
         {locationErrorMsg && <p>Something went wrong: {locationErrorMsg}</p>}
         {coffeeStoresError && <p>Something went wrong: {coffeeStoresError}</p>}
         <div className={styles.heroImage}>
-          <Image src={heroImage} width={700} height={400} alt='hero image' />
+          <Image
+            src={heroImage}
+            width={700}
+            height={400}
+            alt='hero image'
+            priority={true}
+          />
         </div>
         {coffeeStores.length > 0 && (
           <>
