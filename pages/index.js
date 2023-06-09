@@ -103,7 +103,7 @@ export default function Home(props) {
         {props.coffeeStores.length > 0 && (
           <>
             <div className={styles.sectionWrapper}>
-              <h2 className={styles.heading2}>Toronto Stores</h2>
+              <h2 className={styles.heading2}>New Orleans</h2>
               <div className={styles.cardLayout}>
                 {props.coffeeStores.map((coffeeStore) => {
                   return (
