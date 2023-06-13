@@ -14,9 +14,8 @@
 }
 
 .heroImage {
-  position: absolute;
-  top: 0px;
-  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .cardLayout {

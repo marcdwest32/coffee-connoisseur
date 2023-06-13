@@ -1,11 +1,9 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { useContext, useEffect, useState } from 'react'
 import { ACTION_TYPES, StoreContext } from '../store/store-context'
 import styles from '../styles/Home.module.css'
 import Banner from '../components/banner'
 import Card from '../components/card'
-import heroImage from '../public/images/hero-image.png'
 import { fetchCoffeeStores } from '../lib/coffee-stores'
 import useTrackLocation from '../hooks/useTrackLocation'
 
@@ -70,15 +68,6 @@ export default function Home(props) {
         ></Banner>
         {locationErrorMsg && <p>Something went wrong: {locationErrorMsg}</p>}
         {coffeeStoresError && <p>Something went wrong: {coffeeStoresError}</p>}
-        <div className={styles.heroImage}>
-          <Image
-            src={heroImage}
-            width={700}
-            height={400}
-            alt='hero image'
-            priority={true}
-          />
-        </div>
         {coffeeStores.length > 0 && (
           <>
             <div className={styles.sectionWrapper}>
