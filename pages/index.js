@@ -32,7 +32,7 @@ export default function Home(props) {
       if (latLong) {
         try {
           const response = await fetch(
-            `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=50`,
+            `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=30`,
           )
           const coffeeStoresList = await response.json()
           const coffeeStores = coffeeStoresList.sort((p1, p2) =>
