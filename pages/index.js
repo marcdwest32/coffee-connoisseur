@@ -32,9 +32,12 @@ export default function Home(props) {
       if (latLong) {
         try {
           const response = await fetch(
-            `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=20`,
+            `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=50`,
           )
-          const coffeeStores = await response.json()
+          const coffeeStoresList = await response.json()
+          const coffeeStores = coffeeStoresList.sort((p1, p2) =>
+            p1.distance > p2.distance ? 1 : p1.distance < p2.distance ? -1 : 0,
+          )
           dispatch({
             type: ACTION_TYPES.SET_COFFEE_STORES,
             payload: { coffeeStores },

@@ -210,6 +210,14 @@ const CoffeeStore = (initialProps) => {
             />
             <p className={styles.text}>{voteCount}</p>
           </div>
+          <div className={styles.iconWrapper}>
+            <Image src='/icons/open.svg' width='24' height='24' alt={'Open'} />
+            <p className={styles.text}>
+              <a href={storeUrl} target='_blank'>
+                Visit {name}
+              </a>
+            </p>
+          </div>
           <button className={styles.upvoteButton} onClick={handleUpvoteButton}>
             UpVote!
           </button>
